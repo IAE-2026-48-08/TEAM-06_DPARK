@@ -1,0 +1,60 @@
+enum VehicleType {
+    motor
+    mobil
+}
+
+enum TransactionStatus {
+    ongoing
+    completed
+    cancelled
+}
+
+type Transaction {
+    id: ID!
+    plate_number: String!
+    location_id: ID!
+    vehicle_type: VehicleType!
+    entry_time: DateTime!
+    exit_time: DateTime
+    amount: Float
+    status: TransactionStatus!
+    member_id: String
+    discount_amount: Float!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+# ─────────────────────────────────────────────
+# Input: CreateTransactionInput
+# ─────────────────────────────────────────────
+input CreateTransactionInput {
+    plate_number: String! @rules(apply: ["required", "string"])
+    location_id: ID! @rules(apply: ["required", "integer"])
+    vehicle_type: VehicleType! @rules(apply: ["required"])
+    member_id: String
+}
+
+# ─────────────────────────────────────────────
+# Input: UpdateTransactionInput
+# ─────────────────────────────────────────────
+input UpdateTransactionInput {
+    discount_amount: Float
+    status: TransactionStatus
+}
+
+# ─────────────────────────────────────────────
+# Extend Query — Transaction
+# ─────────────────────────────────────────────
+extend type Query {
+    transactions: [Transaction!] @all
+    transaction(id: ID! @eq): Transaction @find
+}
+
+# ─────────────────────────────────────────────
+# Extend Mutation — Transaction
+# ─────────────────────────────────────────────
+extend type Mutation {
+    createTransaction(input: CreateTransactionInput! @spread): Transaction! @create
+    updateTransaction(id: ID!, input: UpdateTransactionInput! @spread): Transaction! @update
+    deleteTransaction(id: ID!): Transaction @delete
+}
