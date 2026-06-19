@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dpark-lahan-service
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=lahan_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=
+      - API_KEY=DParkLahanApiKey2026
+      - APP_KEY=base64:27ktFr464uChSXUMRrDph9Bn5bpLAqOpssEyTZ8NB7c=
+      - APP_ENV=local
+      - APP_DEBUG=true
+    depends_on:
+      - db
+    extra_hosts:
+      - "iae-sso.virtualfri.id:103.41.206.192"
+    networks:
+      - dpark-network
+
+  db:
+    image: mysql:8.0
+    container_name: dpark-lahan-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD="yes"
+      - MYSQL_DATABASE=lahan_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - dpark-network
+
+networks:
+  dpark-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

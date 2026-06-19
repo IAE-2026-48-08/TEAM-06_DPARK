@@ -1,0 +1,36 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Location {
+    id: ID!
+    name: String!
+    address: String!
+    capacity_car: Int!
+    capacity_motor: Int!
+    occupied_car: Int!
+    occupied_motor: Int!
+    available_car_slots: Int!
+    available_motor_slots: Int!
+    tariff_car: Float!
+    tariff_motor: Float!
+    operating_hours: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Query {
+    locations: [Location!]! @all
+    location(id: ID! @eq): Location @find
+}
+
+type Mutation {
+    createLocation(
+        name: String! @rules(apply: ["required", "string", "max:255"])
+        address: String! @rules(apply: ["required", "string", "max:255"])
+        capacity_car: Int! @rules(apply: ["required", "integer", "min:0"])
+        capacity_motor: Int! @rules(apply: ["required", "integer", "min:0"])
+        tariff_car: Float! @rules(apply: ["required", "numeric", "min:0"])
+        tariff_motor: Float! @rules(apply: ["required", "numeric", "min:0"])
+        operating_hours: String! @rules(apply: ["required", "string", "max:255"])
+    ): Location! @create
+}

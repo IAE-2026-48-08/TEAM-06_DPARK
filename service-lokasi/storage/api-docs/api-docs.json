@@ -1,0 +1,433 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Service Lahan & Lokasi (Service A) - DPark Bandung",
+        "description": "API Documentation for Service Lahan & Lokasi (Service A) of DPark Bandung",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server"
+        },
+        {
+            "url": "http://localhost",
+            "description": "Docker/Production Server"
+        }
+    ],
+    "paths": {
+        "/api/v1/locations": {
+            "get": {
+                "tags": [
+                    "Locations"
+                ],
+                "summary": "Get all parking locations with real-time empty slots",
+                "operationId": "49873ce3b7837cc865db7849ec7cccda",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "DPARK Braga"
+                                            },
+                                            "address": {
+                                                "type": "string",
+                                                "example": "Jl. Braga No. 5 Bandung"
+                                            },
+                                            "capacity_car": {
+                                                "type": "integer",
+                                                "example": 40
+                                            },
+                                            "capacity_motor": {
+                                                "type": "integer",
+                                                "example": 80
+                                            },
+                                            "occupied_car": {
+                                                "type": "integer",
+                                                "example": 32
+                                            },
+                                            "occupied_motor": {
+                                                "type": "integer",
+                                                "example": 45
+                                            },
+                                            "available_car_slots": {
+                                                "type": "integer",
+                                                "example": 8
+                                            },
+                                            "available_motor_slots": {
+                                                "type": "integer",
+                                                "example": 35
+                                            },
+                                            "tariff_car": {
+                                                "type": "string",
+                                                "example": "5000.00"
+                                            },
+                                            "tariff_motor": {
+                                                "type": "string",
+                                                "example": "2000.00"
+                                            },
+                                            "operating_hours": {
+                                                "type": "string",
+                                                "example": "06:00 - 23:00"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Locations"
+                ],
+                "summary": "Add a new parking location (Admin)",
+                "operationId": "aff6a55f233e5e2483ad2a6b68576fbb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "address",
+                                    "capacity_car",
+                                    "capacity_motor",
+                                    "tariff_car",
+                                    "tariff_motor",
+                                    "operating_hours"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "DPARK Pasteur"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Jl. Pasteur No. 12 Bandung"
+                                    },
+                                    "capacity_car": {
+                                        "type": "integer",
+                                        "example": 30
+                                    },
+                                    "capacity_motor": {
+                                        "type": "integer",
+                                        "example": 60
+                                    },
+                                    "tariff_car": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 5000
+                                    },
+                                    "tariff_motor": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 2000
+                                    },
+                                    "operating_hours": {
+                                        "type": "string",
+                                        "example": "06:00 - 23:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Location created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation errors occurred"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized: Invalid or missing X-API-KEY"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/locations/{id}": {
+            "get": {
+                "tags": [
+                    "Locations"
+                ],
+                "summary": "Get specific location details by ID",
+                "operationId": "297bb90722857403e546b74145806a12",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Location ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "DPARK Braga"
+                                        },
+                                        "address": {
+                                            "type": "string",
+                                            "example": "Jl. Braga No. 5 Bandung"
+                                        },
+                                        "capacity_car": {
+                                            "type": "integer",
+                                            "example": 40
+                                        },
+                                        "capacity_motor": {
+                                            "type": "integer",
+                                            "example": 80
+                                        },
+                                        "occupied_car": {
+                                            "type": "integer",
+                                            "example": 32
+                                        },
+                                        "occupied_motor": {
+                                            "type": "integer",
+                                            "example": 45
+                                        },
+                                        "available_car_slots": {
+                                            "type": "integer",
+                                            "example": 8
+                                        },
+                                        "available_motor_slots": {
+                                            "type": "integer",
+                                            "example": 35
+                                        },
+                                        "tariff_car": {
+                                            "type": "string",
+                                            "example": "5000.00"
+                                        },
+                                        "tariff_motor": {
+                                            "type": "string",
+                                            "example": "2000.00"
+                                        },
+                                        "operating_hours": {
+                                            "type": "string",
+                                            "example": "06:00 - 23:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Location not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Location not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/locations/{id}/check-in": {
+            "post": {
+                "tags": [
+                    "Locations"
+                ],
+                "summary": "Check-in a vehicle at a parking location (SSO Protected)",
+                "description": "Check-in a vehicle at a parking location.\n\nThis is a CRITICAL STATE-CHANGING transaction that:\n1. Validates JWT from Federated SSO (Cloud Dosen)\n2. Increments occupied vehicle count (state change)\n3. Sends audit log to Legacy SOAP/XML service and stores ReceiptNumber\n4. Publishes event notification to RabbitMQ via AMQP",
+                "operationId": "39ae541a31a020a8a619e2bd881d055d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Location ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "vehicle_type",
+                                    "license_plate"
+                                ],
+                                "properties": {
+                                    "vehicle_type": {
+                                        "type": "string",
+                                        "example": "car",
+                                        "enum": [
+                                            "car",
+                                            "motor"
+                                        ]
+                                    },
+                                    "license_plate": {
+                                        "type": "string",
+                                        "example": "D 1234 AB"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vehicle checked in successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Vehicle checked in successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "audit": {
+                                            "type": "object"
+                                        },
+                                        "amqp": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation or capacity error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Location not found"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "description": "Enter API Key to access secured endpoints",
+                "name": "X-API-KEY",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Locations",
+            "description": "Locations"
+        }
+    ]
+}

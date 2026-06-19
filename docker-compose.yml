@@ -1,1 +1,136 @@
-# docker compose placeholder 
+version: '3.8'
+
+services:
+
+  # ─── API GATEWAY ──────────────────────────────────────────────
+  gateway:
+    image: nginx:alpine
+    container_name: dpark-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - service-transaksi
+      - service-lokasi
+      - service-membership
+    networks:
+      - dpark-network
+
+  # ─── SERVICE A: LAHAN & LOKASI (102022400347) ─────────────────
+  service-lokasi:
+    build:
+      context: ./service-lokasi
+      dockerfile: Dockerfile
+    container_name: dpark-service-lokasi
+    restart: unless-stopped
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db-lokasi
+      - DB_PORT=3306
+      - DB_DATABASE=lahan_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=
+      - API_KEY=DParkLahanApiKey2026
+      - APP_KEY=base64:27ktFr464uChSXUMRrDph9Bn5bpLAqOpssEyTZ8NB7c=
+      - APP_ENV=local
+      - APP_DEBUG=true
+    depends_on:
+      - db-lokasi
+    extra_hosts:
+      - "iae-sso.virtualfri.id:103.41.206.192"
+    networks:
+      - dpark-network
+
+  db-lokasi:
+    image: mysql:8.0
+    container_name: dpark-db-lokasi
+    restart: unless-stopped
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=lahan_db
+    volumes:
+      - mysql-lokasi:/var/lib/mysql
+    networks:
+      - dpark-network
+
+  # ─── SERVICE B: TRANSAKSI (102022430031) ──────────────────────
+  service-transaksi:
+    build:
+      context: ./service-transaksi
+      dockerfile: Dockerfile
+    container_name: dpark-service-transaksi
+    restart: unless-stopped
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db-transaksi
+      - DB_PORT=3306
+      - DB_DATABASE=transaksi_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - SERVICE_LOKASI_URL=http://service-lokasi/api
+      - SERVICE_MEMBERSHIP_URL=http://service-membership/api
+    depends_on:
+      - db-transaksi
+    extra_hosts:
+      - "iae-sso.virtualfri.id:103.41.206.192"
+    networks:
+      - dpark-network
+
+  db-transaksi:
+    image: mysql:8.0
+    container_name: dpark-db-transaksi
+    restart: unless-stopped
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=transaksi_db
+    volumes:
+      - mysql-transaksi:/var/lib/mysql
+    networks:
+      - dpark-network
+
+  # ─── SERVICE C: MEMBERSHIP (102022400119) ─────────────────────
+  service-membership:
+    build:
+      context: ./service-membership
+      dockerfile: Dockerfile
+    container_name: dpark-service-membership
+    restart: unless-stopped
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db-membership
+      - DB_PORT=3306
+      - DB_DATABASE=membership_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=
+      - APP_ENV=local
+      - APP_DEBUG=true
+    depends_on:
+      - db-membership
+    extra_hosts:
+      - "iae-sso.virtualfri.id:103.41.206.192"
+    networks:
+      - dpark-network
+
+  db-membership:
+    image: mysql:8.0
+    container_name: dpark-db-membership
+    restart: unless-stopped
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=membership_db
+    volumes:
+      - mysql-membership:/var/lib/mysql
+    networks:
+      - dpark-network
+
+networks:
+  dpark-network:
+    driver: bridge
+
+volumes:
+  mysql-lokasi:
+  mysql-transaksi:
+  mysql-membership:

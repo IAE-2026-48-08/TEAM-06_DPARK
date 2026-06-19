@@ -1,0 +1,63 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+# ─── TYPES ─────────────────────────────────────────────────────────────
+
+type Member {
+    id: ID!
+    member_number: String!
+    name: String!
+    email: String!
+    phone: String!
+    vehicle_plate: String!
+    membership_type: String!
+    discount_percentage: Int!
+    status: String!
+    joined_at: DateTime!
+    expired_at: DateTime
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type VerificationResult {
+    success: Boolean!
+    message: String!
+    vehicle_plate: String!
+    is_member: Boolean!
+    member_id: ID
+    member_number: String
+    member_name: String
+    membership_type: String
+    discount_percentage: Int
+    calculation: CalculationResult
+}
+
+type CalculationResult {
+    subtotal: Float!
+    discount_percentage: Int!
+    discount_amount: Float!
+    final_amount: Float!
+}
+
+# ─── QUERIES ───────────────────────────────────────────────────────────
+
+type Query {
+    "Lihat daftar semua member (Admin)"
+    members: [Member!]! @all(orderBy: [{ column: "created_at", direction: DESC }])
+
+    "Detail member berdasarkan ID & status membership"
+    member(id: ID! @eq): Member @find
+}
+
+# ─── MUTATIONS ─────────────────────────────────────────────────────────
+
+type Mutation {
+    "Verifikasi membership saat transaksi parkir berlangsung"
+    verifyMembership(
+        vehicle_plate: String!
+        subtotal: Float
+    ): VerificationResult!
+}

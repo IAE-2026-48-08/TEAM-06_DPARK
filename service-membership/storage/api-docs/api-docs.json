@@ -1,0 +1,122 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "DPark Membership Service API",
+        "description": "Dokumentasi API untuk Service C: Membership & Voucher pada sistem DPark Bandung.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api/v1",
+            "description": "DPark API Server"
+        }
+    ],
+    "paths": {
+        "/members": {
+            "get": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Get list of all members",
+                "operationId": "0a7045fbb9a3c713742cb2ed937a0105",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/members/{id}": {
+            "get": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Get member details and membership status",
+                "operationId": "1fd856fdfaaf1e386c20f99e657e1904",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Member not found"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/members/verification": {
+            "post": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Verify membership during parking transaction",
+                "operationId": "3c264e54726e45c7df8d91a166ec4da4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "vehicle_plate": {
+                                        "type": "string",
+                                        "example": "D 1234 ABC"
+                                    },
+                                    "subtotal": {
+                                        "type": "number",
+                                        "example": 10000,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Verification result"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "name": "x-api-key",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Member",
+            "description": "Member"
+        }
+    ]
+}
