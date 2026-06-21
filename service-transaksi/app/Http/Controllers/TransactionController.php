@@ -124,7 +124,7 @@ class TransactionController extends Controller
         // Panggil service-lokasi untuk mencatat kendaraan masuk dan update slot tersedia.
         // vehicle_type di service-lokasi menggunakan 'car'/'motor', bukan 'mobil'/'motor'
         $lokasiVehicleType = $request->vehicle_type === 'mobil' ? 'car' : 'motor';
-        $checkInData       = $this->callLokasiCheckIn($request->location_id, $lokasiVehicleType);
+        $checkInData       = $this->callLokasiCheckIn($request->location_id, $lokasiVehicleType, $request->plate_number);
 
         // ── Simpan Transaksi ─────────────────────────────────────────────────
         $transaction = Transaction::create([
@@ -305,9 +305,10 @@ class TransactionController extends Controller
      *
      * @param  int    $locationId  ID lokasi parkir
      * @param  string $vehicleType 'car' atau 'motor'
+     * @param  string $plateNumber Plat nomor kendaraan
      * @return array{success: bool, available_slots: int|null}
      */
-    private function callLokasiCheckIn(int $locationId, string $vehicleType): array
+    private function callLokasiCheckIn(int $locationId, string $vehicleType, string $plateNumber): array
     {
         $defaultResult = ['success' => false, 'available_slots' => null];
 
@@ -321,6 +322,7 @@ class TransactionController extends Controller
                 'Content-Type' => 'application/json',
             ])->timeout(10)->post("{$url}/v1/locations/{$locationId}/internal-checkin", [
                 'vehicle_type' => $vehicleType,
+                'license_plate' => $plateNumber,
             ]);
 
             if ($response->successful()) {
